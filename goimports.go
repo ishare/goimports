@@ -79,15 +79,16 @@ func processFile(filename string, in io.Reader, out io.Writer, stdin bool) error
 		return err
 	}
 
+	bts := src
 	re, _ := regexp.Compile(`(?Us)import\s*\(.*\)`)
-	bs := re.FindAllSubmatch(src, -1)
+	bs := re.FindAllSubmatch(bts, -1)
 	if len(bs) > 0 && len(bs[0]) > 0 {
 		r1, _ := regexp.Compile(`[\n\s]*\n+`)
 		rep := r1.ReplaceAll(bs[0][0], []byte("\n"))
-		src = bytes.Replace(src, bs[0][0], rep, -1)
+		bts = bytes.Replace(bts, bs[0][0], rep, -1)
 	}
 
-	res, err := imports.Process(filename, src, opt)
+	res, err := imports.Process(filename, bts, opt)
 	if err != nil {
 		return err
 	}
